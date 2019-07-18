@@ -6,8 +6,11 @@
 // Constants
 // const char* ssid = "ESP8266";
 // const char* password = "85858585";
-const char* ssid = "NUST";
-const char* password = "nust008tech";
+// const char* ssid = "NUST";
+// const char* password = "nust008tech";
+ const char* ssid = "Usama";
+ const char* password = "hamza123";
+
 
 // Globals
 WebSocketsServer webSocket = WebSocketsServer(80);

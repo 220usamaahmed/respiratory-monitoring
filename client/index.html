@@ -1,22 +1,77 @@
 <html>
-<!-- Adding a data chart using Chart.js -->
+
 	<head>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
+		<title>Web Socket Data Recorder</title>
+		<link rel="stylesheet" type="text/css" href="styles/index.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 	</head>
 
-	<body onload="javascript:init()">
-	<!-- Adding a slider for controlling data rate -->
-		<div>
-			<input type="range" min="1" max="10" value="1" id="dataRateSlider" oninput="sendDataRate()" />
-			<label for="dataRateSlider" id="dataRateLabel">Rate: N/A</label>
+	<body>
+
+		<div class="wrapper">
+			
+			<div class="control-pannel">
+				
+				<dir class="section">
+					<h1>Connection</h1>
+					<span>
+						<input type="text" id="i-websocket-ip" placeholder="Enter IP">
+						<button onclick="toggleWebSocketConnection()" id="btn-websocket-connection">CONNECT</button>
+					</span>
+				</dir>
+
+				<div class="section">
+					<h1>Channels</h1>
+					<ul id="ul-channels"></ul>
+					<span>
+						<input type="text" id="i-new-channel" placeholder="Enter Label">
+						<button onclick="addChannel()">ADD</button>
+					</span>
+				</div>
+
+				<div class="section">
+					<h1>Recording</h1>
+					<span>
+						<label>Sample Rate</label>
+						<span class="spinner">
+							<button onclick="changeSampleRate(-1)">-</button>
+							<input type="text" id="i-sample-rate" placeholder="1Hz" disabled="true">
+							<button onclick="changeSampleRate(+1)">+</button>
+						</span>
+					</span>
+					<span>
+						<button onclick="toggleRecording()">Start Recording</button>
+						<button onclick="saveRecording()">Save</button>
+					</span>
+				</div>
+
+			</div>
+
+			<div class="charts-holder" id="charts-holder"></div>
+
 		</div>
-		<hr />
-		<div>
-			<canvas id="line-chart" width="800px" height="450px"></canvas>
-		</div>
-		<!-- Adding a websocket to the client (webpage) -->
-		<script type="text/javascript" src="main.js"></script>
+		
+		<script type="text/javascript" src="javascript/DOMHandler.js"></script>		
+		<script type="text/javascript" src="javascript/webSocketHandler.js"></script>
 
 	</body>
 
 </html>
+
+
+
+
+
+<!--
+
+<div>
+	<input type="range" min="1" max="10" value="1" id="dataRateSlider" oninput="sendDataRate()" />
+	<label for="dataRateSlider" id="dataRateLabel">Rate: N/A</label>
+</div>
+
+<div>
+	<canvas id="line-chart" width="800px" height="450px"></canvas>
+</div>
+
+
+-->
