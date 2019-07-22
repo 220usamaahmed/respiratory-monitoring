@@ -6,8 +6,13 @@
 // Constants
 // const char* ssid = "ESP8266";
 // const char* password = "85858585";
+<<<<<<< HEAD
 const char* ssid = "Usama";
 const char* password = "hamza123";
+=======
+const char* ssid = "NUST";
+const char* password = "nust008tech";
+>>>>>>> 08028aacb45d778b7bef66cd8467c91980e3ec2d
 
 
 // Globals
