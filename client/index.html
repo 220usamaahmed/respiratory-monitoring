@@ -40,9 +40,12 @@
 						</span>
 					</span>
 					<span>
-						<button onclick="toggleRecording()">Start Recording</button>
-						<button onclick="saveRecording()">Save</button>
+						<button id="btn-toggle-recording" onclick="btnToggleRecordingClicked()">START</button>
+						<button onclick="btnSeperateClicked()">SEPERATE</button>
+						<button onclick="btnResetRecordingClicked()">RESET</button>
+						<button onclick="btnSaveRecordingClicked()">SAVE</button>
 					</span>
+					<p id="p-recording-status">Recording Status</p>
 				</div>
 
 			</div>
@@ -51,27 +54,9 @@
 
 		</div>
 		
-		<script type="text/javascript" src="javascript/DOMHandler.js"></script>		
+		<script type="text/javascript" src="javascript/DOMHandler.js"></script>
 		<script type="text/javascript" src="javascript/webSocketHandler.js"></script>
 
 	</body>
 
 </html>
-
-
-
-
-
-<!--
-
-<div>
-	<input type="range" min="1" max="10" value="1" id="dataRateSlider" oninput="sendDataRate()" />
-	<label for="dataRateSlider" id="dataRateLabel">Rate: N/A</label>
-</div>
-
-<div>
-	<canvas id="line-chart" width="800px" height="450px"></canvas>
-</div>
-
-
--->

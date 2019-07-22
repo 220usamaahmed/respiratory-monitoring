@@ -1,83 +1,97 @@
 let webSocket = null;
 
-// if statement here is not correct.
+let channels = [];
+let dataPlots = [];
+
+let maxVisibleDataPoints = 64;
+
+let sampleRate = 1;
+let dSP = 1;
+let MIN_SAMPLE_RATE = 1
+let MAX_SAMPLE_RATE = 20;
+
+let recording = false;
+let data_records = [[]];
+
 function toggleWebSocketConnection() {
 
 	if (webSocket == null) {
 
 		let hostName = document.getElementById("i-websocket-ip").value;
+		updateConnectionStatusLabel("connecting");
 
 		console.log("Attempting to connect to ws://" + hostName);
 
 		try {
 
 			webSocket = new WebSocket("ws://" + hostName);
+
+			webSocket.onopen = function(event) {
+
+				console.log("Connection established!");
+				updateConnectionStatusLabel("connected");
+
+				webSocket.send(sampleRate);
+
+			}
 	
 			webSocket.onmessage = function(event) {
+
+				// console.log(data);
 
 				addData(JSON.parse(event.data));
 			
 			}
 
+			webSocket.onclose = function(event) {
+
+				if (event.wasClean) {
+
+					console.log("Connection was closed cleanly.");
+					updateConnectionStatusLabel("disconnected");
+
+				}
+
+				webSocket = null;
+
+			}
+
+			webSocket.onerror = function(error) {
+
+				console.log(error.message);
+				updateConnectionStatusLabel("disconnected");
+
+			}
+
 		} catch (error) {
 
-			console.log("Could Not Connect.");
+			console.log(error);
 
 		}
 
 	} else if (webSocket != null && webSocket.readyState === WebSocket.OPENED) {
 
-		webSocket.close()
+		webSocket.close();
 	
 	}
 
-	// Call btn label update function.
-
 }
 
-channels = [];
-dataPlots = [];
 
-function addChannel() {
+function addChannel(newChannelName=null) {
 
-	let newChannelName = document.getElementById("i-new-channel").value
+	if (newChannelName == null) newChannelName = document.getElementById("i-new-channel").value;
 	channels.push(newChannelName);
 
-	let newLi = document.createElement("li");
-	newLi.appendChild(document.createTextNode(newChannelName));
-	document.getElementById("ul-channels").appendChild(newLi);
-
-	let newCanvas = document.createElement("canvas");
-	document.getElementById("charts-holder").appendChild(newCanvas);
-
-	dataPlot = new Chart(newCanvas, {
-		type: 'line',
-		data: {
-		labels: [],
-		datasets: [{
-			data: [],
-			label: "Data Point 01",
-			borderColor: "#E91E63",
-			fill: false
-			}]
-		},
-		options: {
-			title: {
-				display: true,
-				text: newChannelName
-			}
-		}
-	});
+	updateChannelList(newChannelName);
+	dataPlot = createNewChannelPlot(newChannelName);
 
 	dataPlots.push(dataPlot);
 
 }
 
-let maxDataPoints = 16;
 
 function addData(data) {
-
-	console.log(data);
 
 	data_list = [];
 
@@ -86,17 +100,20 @@ function addData(data) {
 		let channel = channels[i];
 		let dataPlot = dataPlots[i];
 
-		if(dataPlot.data.labels.length > maxDataPoints) removeData(dataPlot);
+		if(dataPlot.data.labels.length > maxVisibleDataPoints) removeData(dataPlot);
 		dataPlot.data.labels.push(new Date().getSeconds());
 		dataPlot.data.datasets[0].data.push(data[channel])
 
 		dataPlot.update();
 
-		data_list.push(data[channel]);
+		data_list.push(data[channel], (new Date()).getTime());
 
 	}
 
-	if (recording) data_record.push(data_list);
+	if (recording) { 
+		data_records[data_records.length - 1].push(data_list);
+		// updateRecordingStatus(data_records.length, data_records[data_records.length - 1].length);
+	}
 
 }
 
@@ -107,11 +124,6 @@ function removeData(dataPlot){
 
 }
 
-let sampleRate = 1;
-let dSP = 1;
-let MIN_SAMPLE_RATE = 1
-let MAX_SAMPLE_RATE = 10;
-
 function changeSampleRate(dSPSign){
 
 	sampleRate += dSP * dSPSign;
@@ -120,39 +132,56 @@ function changeSampleRate(dSPSign){
 
 	document.getElementById("i-sample-rate").value = sampleRate + "Hz";
 
-	webSocket.send(1 / sampleRate);
-
-	// if (webSocket != null && webSocket.readyState === WebSocket.OPENED) {
-	// 	console.log(sampleRate);
-	// 	
-	// } 
+	if (webSocket != null && webSocket.readyState === WebSocket.OPEN) {
+	
+		console.log(sampleRate);
+		webSocket.send(1 / sampleRate);
+		
+	}
+	
 }
 
-let recording = false;
-let data_record = [];
+function btnToggleRecordingClicked() {
 
-function toggleRecording() {
-
-	if (recording == false) recording = true;
-	else recording = false;
+	if (recording == false) { 
+		recording = true;
+		updateToggleRecordingBtn(status="recording");
+	}
+	else {
+		recording = false;
+		updateToggleRecordingBtn(status="not-recording");
+	}
 
 }
 
-function saveRecording() {
+function btnSeperateClicked() {
+	data_records.push([]);
+}
 
-	let csv = channels.join(',') + "\n";
+function btnSaveRecordingClicked() {
 
-	data_record.forEach(function(row) {
+	for (var i = data_records.length - 1; i >= 0; i--) {
+		data_record = data_records[i];
 
-		csv += row.join(',');
-		csv += "\n";
+		let csv = channels.join(',') + "\n";
 
-	});
+		data_record.forEach(function(row) {
 
-	let hiddenElement = document.createElement('a');
-	hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-	hiddenElement.target = '_blank';
-	hiddenElement.download = 'data.csv';
-	hiddenElement.click();
+			csv += row.join(',');
+			csv += "\n";
 
+		});
+
+		let hiddenElement = document.createElement('a');
+		hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+		hiddenElement.target = '_blank';
+		hiddenElement.download = 'data_' + i + '.csv';
+		hiddenElement.click();
+
+	}
+
+}
+
+function btnResetRecordingClicked() {
+	data_records = [[]];
 }
