@@ -184,4 +184,6 @@ function btnSaveRecordingClicked() {
 
 function btnResetRecordingClicked() {
 	data_records = [[]];
+	recording = false;
+	updateToggleRecordingBtn(status="not-recording");
 }
