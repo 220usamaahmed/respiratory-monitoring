@@ -5,10 +5,10 @@
 
 
 // // // Set SSID and Password for the Network here. 
-const char* SSID = "";
-const char* PASSWORD = "";
+const char* ssid = "";
+const char* password = "";
 
-webSocketServer webSocket = WebSocketsServer(80);
+WebSocketsServer webSocket = WebSocketsServer(80);
 float sampleRate = 1;
 Ticker timer;
 
@@ -72,25 +72,21 @@ void onWebSocketEvent(uint8_t num,
 
 	// New client has connected
 	case WStype_CONNECTED:
+	    {
 	    IPAddress ip = webSocket.remoteIP(num);
 	    Serial.printf("[%u] Connection from ", num);
 	    Serial.println(ip.toString());
-		break;
-
+	  	break;
+	    }
 	// Echo text message back to client
 	case WStype_TEXT:
-		sampleRate = (float) atof((const char *) &payload[0]);
-		timer.detach();
-		timer.attach(sampleRate, getData);
-		break;
-
+    {
+  		sampleRate = (float) atof((const char *) &payload[0]);
+  		timer.detach();
+  		timer.attach(sampleRate, getData);
+  		break;
+    }
 	// For everything else: do nothing
-	case WStype_BIN:
-	case WStype_ERROR:
-	case WStype_FRAGMENT_TEXT_START:
-	case WStype_FRAGMENT_BIN_START:
-	case WStype_FRAGMENT:
-	case WStype_FRAGMENT_FIN:
 	default:
 		break;
 	}

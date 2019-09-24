@@ -2,16 +2,18 @@ let webSocket = null;
 
 let channels = [];
 let dataPlots = [];
+let plotCounter = 0;
+let PLOT_EVERY = 1;
 
 let maxVisibleDataPoints = 64;
 
-let sampleRate = 1;
+let sampleRate = 32;
 let dSP = 1;
 let MIN_SAMPLE_RATE = 1
 let MAX_SAMPLE_RATE = 20;
 
 let recording = false;
-let data_records = [[]];
+let data_records = [];
 
 function toggleWebSocketConnection() {
 
@@ -100,9 +102,13 @@ function addData(data) {
 		let channel = channels[i];
 		let dataPlot = dataPlots[i];
 
-		if(dataPlot.data.labels.length > maxVisibleDataPoints) removeData(dataPlot);
-		dataPlot.data.labels.push(new Date().getSeconds());
-		dataPlot.data.datasets[0].data.push(data[channel])
+		if (dataPlot.data.labels.length > maxVisibleDataPoints) removeData(dataPlot);
+		if (plotCounter % PLOT_EVERY == 0) {
+			dataPlot.data.labels.push(new Date().getSeconds());
+			dataPlot.data.datasets[0].data.push(data[channel])
+		}
+
+		plotCounter++;
 
 		dataPlot.update();
 
@@ -187,3 +193,16 @@ function btnResetRecordingClicked() {
 	recording = false;
 	updateToggleRecordingBtn(status="not-recording");
 }
+
+addChannel('channel_01');
+addChannel('channel_02');
+addData({'channel_01': 11, 'channel_02': 0});
+addData({'channel_01': 15, 'channel_02': 1});
+addData({'channel_01': 11, 'channel_02': 2});
+addData({'channel_01': 11, 'channel_02': 5});
+addData({'channel_01': 11, 'channel_02': 1});
+addData({'channel_01': 12, 'channel_02': 3});
+addData({'channel_01': 12, 'channel_02': 2});
+addData({'channel_01': 14, 'channel_02': 1});
+addData({'channel_01': 13, 'channel_02': 1});
+dataPlot.update();
