@@ -194,15 +194,15 @@ function btnResetRecordingClicked() {
 	updateToggleRecordingBtn(status="not-recording");
 }
 
-addChannel('channel_01');
-addChannel('channel_02');
-addData({'channel_01': 11, 'channel_02': 0});
-addData({'channel_01': 15, 'channel_02': 1});
-addData({'channel_01': 11, 'channel_02': 2});
-addData({'channel_01': 11, 'channel_02': 5});
-addData({'channel_01': 11, 'channel_02': 1});
-addData({'channel_01': 12, 'channel_02': 3});
-addData({'channel_01': 12, 'channel_02': 2});
-addData({'channel_01': 14, 'channel_02': 1});
-addData({'channel_01': 13, 'channel_02': 1});
-dataPlot.update();
+// addChannel('channel_01');
+// addChannel('channel_02');
+// addData({'channel_01': 11, 'channel_02': 0});
+// addData({'channel_01': 15, 'channel_02': 1});
+// addData({'channel_01': 11, 'channel_02': 2});
+// addData({'channel_01': 11, 'channel_02': 5});
+// addData({'channel_01': 11, 'channel_02': 1});
+// addData({'channel_01': 12, 'channel_02': 3});
+// addData({'channel_01': 12, 'channel_02': 2});
+// addData({'channel_01': 14, 'channel_02': 1});
+// addData({'channel_01': 13, 'channel_02': 1});
+// dataPlot.update();
