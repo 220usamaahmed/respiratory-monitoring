@@ -13,7 +13,7 @@ let MIN_SAMPLE_RATE = 1
 let MAX_SAMPLE_RATE = 20;
 
 let recording = false;
-let data_records = [];
+let data_records = [[]];
 
 function toggleWebSocketConnection() {
 
